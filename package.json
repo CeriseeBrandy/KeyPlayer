@@ -1,0 +1,71 @@
+{
+  "name": "keyplayer",
+  "productName": "KeyPlayer Media Player",
+  "version": "1.0.0",
+  "description": "Lecteur multimédia épuré au style Kingdom Hearts",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "keywords": [
+    "media-player",
+    "kingdom-hearts"
+  ],
+  "author": "CeriseeBrandy",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^41.2.0",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "discord-rpc": "^4.0.1",
+    "jsmediatags": "^3.9.7",
+    "node-mpv": "^1.5.0"
+  },
+  "build": {
+    "appId": "com.keyplayer.app",
+    "productName": "KeyPlayer",
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icone.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "perMachine": true,
+      "include": "build/installer.nsh",
+      "installerSidebar": "assets/installer-sidebar.bmp",
+      "uninstallerSidebar": "assets/installer-sidebar.bmp",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "fileAssociations": [
+      {
+        "ext": "mp4",
+        "name": "Vidéo MP4",
+        "role": "Viewer"
+      },
+      {
+        "ext": "mkv",
+        "name": "Vidéo MKV",
+        "role": "Viewer"
+      },
+      {
+        "ext": "webm",
+        "name": "Vidéo WebM",
+        "role": "Viewer"
+      },
+      {
+        "ext": "mp3",
+        "name": "Fichier Audio MP3",
+        "role": "Viewer"
+      },
+      {
+        "ext": "flac",
+        "name": "Fichier Audio FLAC",
+        "role": "Viewer"
+      }
+    ]
+  }
+}

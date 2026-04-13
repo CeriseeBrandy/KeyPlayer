@@ -1,0 +1,624 @@
+/* --- BASE & FENÊTRE --- */
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: transparent !important;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    height: 100vh;
+    width: 100vw;
+    display: block;
+}
+
+body.kp-fullscreen-active {
+    background: #000 !important;
+}
+
+.keyplayer-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    border-radius: 12px;
+    border: 1px solid #333;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* --- ENTÊTE & BARRE DE TITRE --- */
+.kp-header-area {
+    background: #242424;
+    border-bottom: 1px solid #333;
+    z-index: 1000;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.kp-top-bar {
+    height: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    -webkit-app-region: drag;
+}
+
+.kp-title-group {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.kp-app-icon { width: 16px; height: 16px; object-fit: contain; }
+.kp-app-name { font-size: 12px; color: #cccccc; user-select: none; }
+
+/* BOUTONS DE FENÊTRE */
+.kp-win-buttons {
+    display: flex;
+    -webkit-app-region: no-drag !important;
+    position: relative;
+    z-index: 9999;
+}
+
+.kp-win-buttons button {
+    background: transparent;
+    border: none;
+    padding: 0 15px;
+    height: 32px;
+    color: #888;
+    cursor: pointer;
+    pointer-events: auto !important;
+    transition: background 0.2s;
+}
+.kp-win-buttons button:hover { background: #333; color: white; }
+.kp-close-btn:hover { background: #e81123 !important; }
+
+/* BARRE DE MENU */
+.kp-menu-bar {
+    display: flex;
+    padding: 0 10px 5px 10px;
+    gap: 5px;
+    -webkit-app-region: no-drag;
+}
+
+.kp-menu-item-container { position: relative; }
+.kp-menu-item {
+    color: #bbb;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+.kp-menu-item:hover { background: #333; color: #ffd700; }
+
+/* DROPDOWN */
+.kp-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #2b2b2b;
+    border: 1px solid #444;
+    min-width: 240px;
+    z-index: 101;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    padding: 5px 0;
+}
+.kp-menu-item-container:hover .kp-dropdown-menu { display: block; }
+.kp-dropdown-item {
+    padding: 8px 15px;
+    color: #eee;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+}
+.kp-dropdown-item:hover { background: #3d3d3d; color: #ffd700; }
+.kp-dropdown-divider { height: 1px; background: #444; margin: 5px 10px; }
+
+/* --- ZONE VIDÉO --- */
+.kp-video-zone {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+#mainVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    position: relative;
+    z-index: 2;
+}
+
+/* --- SOUS-TITRES NATIFS --- */
+video::cue {
+    background: rgba(0, 0, 0, 0.75);
+    color: #ffffff;
+    font-size: 1.1em;
+    font-family: 'Segoe UI', sans-serif;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* --- SCÈNE PLACEHOLDER --- */
+#kp-placeholder-scene {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    display: flex;
+}
+
+.kp-battle-sprite-video {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    image-rendering: pixelated;
+    opacity: 0.8;
+}
+
+.kp-placeholder-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    backdrop-filter: blur(3px);
+    background: rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
+
+/* POCHETTE AUDIO */
+.audio-info-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    animation: khFadeIn 0.8s ease-out;
+    z-index: 20;
+}
+
+#kp-placeholder-image {
+    width: 320px;
+    height: 320px;
+    object-fit: cover;
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.4));
+    border: 3px solid #ffd700;
+    border-radius: 12px;
+}
+
+/* MÉTADONNÉES AUDIO */
+.audio-text-metadata {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+}
+
+#track-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    max-width: 320px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#track-artist {
+    font-size: 13px;
+    color: #aaa;
+    max-width: 320px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* BOX SORA */
+.sora-bubble-container {
+    position: absolute;
+    top: 180px !important;
+    left: 650px !important;
+    z-index: 30;
+    animation: boxFloat 2s ease-in-out infinite;
+}
+
+#drop-text-hint {
+    background-image: url('assets/box.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 250px;
+    height: 250px;
+    display: block !important;
+}
+
+/* --- CONTRÔLES --- */
+.kp-controls {
+    background: #242424;
+    padding: 12px 15px 15px 15px;
+    border-top: 1px solid #333;
+    z-index: 100;
+    position: relative;
+    overflow: visible;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* --- PROGRESSION --- */
+.kp-progress-wrapper {
+    position: relative;
+    width: 100%;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+.kp-progress-bg {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 3px;
+    z-index: 1;
+}
+
+.kp-progress-fill {
+    position: absolute;
+    left: 0;
+    width: 0%;
+    height: 6px;
+    background: #ffd700;
+    border-radius: 3px;
+    z-index: 2;
+    border: 1px solid #ffd700;
+    box-sizing: border-box;
+}
+
+.kp-progress-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: calc(100% + 28px);
+    height: 100%;
+    background: transparent !important;
+    margin: 0 -14px;
+    outline: none;
+    position: relative;
+    z-index: 3;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.kp-progress-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 28px;
+    width: 28px;
+    background-image: url('assets/crown.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+    border: none;
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+    transition: transform 0.1s ease-out;
+    margin-top: -2px;
+}
+
+/* --- LIGNE DE CONTRÔLES --- */
+.kp-controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 40px;
+    margin-top: 5px;
+    position: relative;
+}
+
+/* --- GROUPE GAUCHE (temps + vitesse) --- */
+.kp-left-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.kp-media-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* --- BOUTONS --- */
+.kp-btn-square {
+    background: #333;
+    border: 1px solid #444;
+    border-radius: 6px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #ddd;
+    font-size: 14px;
+    transition: all 0.2s;
+    -webkit-app-region: no-drag;
+}
+
+.kp-btn-square:hover {
+    border-color: #ffd700;
+    color: #ffd700;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+/* Boutons secondaires (opacity réduite) */
+.kp-opacity {
+    opacity: 0.45;
+}
+.kp-opacity:hover {
+    opacity: 1;
+}
+
+/* Bouton actif (repeat/shuffle/subtitle) */
+.kp-btn-active {
+    color: #ffd700 !important;
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.4) !important;
+    opacity: 1 !important;
+}
+
+/* --- VITESSE DE LECTURE --- */
+.kp-speed-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.kp-speed-label {
+    font-size: 10px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.kp-speed-buttons {
+    display: flex;
+    gap: 3px;
+}
+
+.kp-speed-btn {
+    font-size: 10px;
+    width: 30px;
+    height: 24px;
+    color: #888;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    -webkit-app-region: no-drag;
+}
+
+.kp-speed-btn:hover {
+    color: #ffd700;
+    border-color: #ffd700;
+    background: #1a1a1a;
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.2);
+}
+
+.kp-speed-btn.kp-speed-active {
+    color: #1a1a1a;
+    background: #ffd700;
+    border-color: #ffd700;
+    font-weight: bold;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+/* --- VOLUME --- */
+.kp-volume-group {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+#volumeBtn {
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #ffd700;
+    font-size: 16px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 25px;
+    -webkit-app-region: no-drag;
+}
+
+.kp-volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 80px;
+    height: 5px;
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 3px;
+    cursor: pointer;
+    outline: none;
+    margin-left: 8px;
+}
+
+.kp-volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #ffd700;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* --- AFFICHAGE DU TEMPS --- */
+.kp-time-display {
+    font-size: 11px;
+    color: #ffd700;
+    font-family: 'Segoe UI', monospace;
+    white-space: nowrap;
+}
+
+/* ==========================================
+   MODE PLEIN ÉCRAN
+   ========================================== */
+
+.kp-hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.kp-header-area.kp-hidden {
+    transform: translateY(-100%);
+}
+
+.kp-controls.kp-hidden {
+    transform: translateY(100%);
+}
+
+.kp-header-area.kp-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10000;
+    background: linear-gradient(rgba(0,0,0,0.92), rgba(0,0,0,0.7)) !important;
+    border-bottom: none;
+}
+
+.kp-controls.kp-fullscreen {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10000;
+    background: #1a1a1a !important;
+    border-top: 1px solid #333;
+}
+
+.kp-video-zone.kp-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+}
+
+.kp-header-area.kp-fullscreen .kp-dropdown-menu {
+    background: #2b2b2b !important;
+    opacity: 1 !important;
+}
+
+/* --- SORTIE AUDIO --- */
+.kp-dropdown-label {
+    color: #ffd700 !important;
+    font-size: 11px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: default !important;
+    opacity: 0.8;
+}
+
+.kp-dropdown-label:hover {
+    background: transparent !important;
+    color: #ffd700 !important;
+}
+
+.kp-audio-loading {
+    color: #666 !important;
+    font-style: italic;
+    cursor: default !important;
+}
+
+.kp-audio-loading:hover {
+    background: transparent !important;
+    color: #666 !important;
+}
+
+.kp-audio-device-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kp-audio-check {
+    color: transparent;
+    font-size: 11px;
+    min-width: 12px;
+}
+
+.kp-audio-device-item.kp-audio-active {
+    color: #ffd700;
+}
+
+.kp-audio-device-item.kp-audio-active .kp-audio-check {
+    color: #ffd700;
+}
+
+/* --- SÉLECTEUR DE LANGUE --- */
+.kp-lang-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-start !important;
+}
+
+.kp-lang-flag {
+    font-size: 15px;
+    min-width: 20px;
+}
+
+.kp-lang-check {
+    margin-left: auto;
+    color: transparent;
+    font-size: 11px;
+}
+
+.kp-lang-item.kp-lang-active {
+    color: #ffd700;
+}
+
+.kp-lang-item.kp-lang-active .kp-lang-check {
+    color: #ffd700;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes boxFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+@keyframes khFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}

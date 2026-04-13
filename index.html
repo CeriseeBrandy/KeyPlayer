@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>KeyPlayer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="keyplayer-container">
+
+        <div class="kp-header-area">
+            <div class="kp-top-bar">
+                <div class="kp-title-group">
+                    <img src="assets/icone.png" alt="" class="kp-app-icon">
+                    <span class="kp-app-name">KeyPlayer Media Player</span>
+                </div>
+                <div class="kp-win-buttons">
+                    <button onclick="window.minimize()" title="Minimiser">—</button>
+                    <button id="kp-fullscreen-topbar-btn" onclick="window.toggleFullscreen()" title="Plein écran (F)">⛶</button>
+                    <button class="kp-close-btn" onclick="window.close()" title="Fermer">✕</button>
+                </div>
+            </div>
+            <div class="kp-menu-bar">
+
+                <!-- MÉDIA -->
+                <div class="kp-menu-item-container">
+                    <div class="kp-menu-item" data-i18n="menu.media">Média</div>
+                    <div class="kp-dropdown-menu">
+                        <div class="kp-dropdown-item" onclick="document.getElementById('fileInput').click()"><span data-i18n="menu.openFile">Ouvrir un fichier...</span> <span>Ctrl+O</span></div>
+                        <div class="kp-dropdown-item" onclick="document.getElementById('multiFileInput').click()"><span data-i18n="menu.openFiles">Ouvrir plusieurs fichiers...</span> <span>Ctrl+Shift+O</span></div>
+                        <div class="kp-dropdown-item" onclick="document.getElementById('folderInput').click()"><span data-i18n="menu.openFolder">Ouvrir un dossier...</span> <span>Ctrl+F</span></div>
+                        <div class="kp-dropdown-divider"></div>
+                        <div class="kp-dropdown-item" onclick="document.getElementById('subtitleInput').click()"><span data-i18n="menu.loadSubs">Charger des sous-titres...</span></div>
+                        <div class="kp-dropdown-divider"></div>
+                        <div class="kp-dropdown-item" onclick="window.close()"><span data-i18n="menu.quit">Quitter</span> <span>Ctrl+Q</span></div>
+                    </div>
+                </div>
+
+                <!-- AUDIO -->
+                <div class="kp-menu-item-container">
+                    <div class="kp-menu-item" data-i18n="menu.audio">Audio</div>
+                    <div class="kp-dropdown-menu">
+                        <div class="kp-dropdown-item kp-dropdown-label">🔈 <span data-i18n="menu.audioOutput">Sortie audio</span></div>
+                        <div class="kp-dropdown-divider"></div>
+                        <div id="kp-audio-outputs-list">
+                            <div class="kp-dropdown-item kp-audio-loading" data-i18n="menu.audioLoading">Chargement des périphériques...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PARAMÈTRES -->
+                <div class="kp-menu-item-container">
+                    <div class="kp-menu-item" data-i18n="menu.settings">Paramètres</div>
+                    <div class="kp-dropdown-menu">
+                        <div class="kp-dropdown-item kp-dropdown-label">🌐 <span data-i18n="menu.language">Langue / Language</span></div>
+                        <div class="kp-dropdown-divider"></div>
+
+                        <div class="kp-dropdown-item kp-lang-item kp-lang-active" data-lang="fr">
+                            <img src="assets/flags/fr.png" class="kp-lang-flag" alt="FR">
+                            <span class="kp-lang-name">Français</span>
+                            <span class="kp-lang-check">✓</span>
+                        </div>
+
+                        <div class="kp-dropdown-item kp-lang-item" data-lang="en">
+                            <img src="assets/flags/en.png" class="kp-lang-flag" alt="EN">
+                            <span class="kp-lang-name">English</span>
+                            <span class="kp-lang-check">✓</span>
+                        </div>
+
+                        <div class="kp-dropdown-item kp-lang-item" data-lang="es">
+                            <img src="assets/flags/es.png" class="kp-lang-flag" alt="ES">
+                            <span class="kp-lang-name">Español</span>
+                            <span class="kp-lang-check">✓</span>
+                        </div>
+
+                        <div class="kp-dropdown-item kp-lang-item" data-lang="ja">
+                            <img src="assets/flags/ja.png" class="kp-lang-flag" alt="JA">
+                            <span class="kp-lang-name">日本語</span>
+                            <span class="kp-lang-check">✓</span>
+                        </div>
+
+                        <div class="kp-dropdown-item kp-lang-item" data-lang="pt">
+                            <img src="assets/flags/pt.png" class="kp-lang-flag" alt="PT">
+                            <span class="kp-lang-name">Português</span>
+                            <span class="kp-lang-check">✓</span>
+                        </div>
+
+                        <div class="kp-dropdown-item kp-lang-item" data-lang="ru">
+                            <img src="assets/flags/ru.png" class="kp-lang-flag" alt="RU">
+                            <span class="kp-lang-name">Русский</span>
+                            <span class="kp-lang-check">✓</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- AIDE -->
+                <div class="kp-menu-item" data-i18n="menu.help" onclick="window.openGithub()">Aide</div>
+
+            </div>
+        </div>
+
+        <div class="kp-video-zone">
+            <video id="mainVideo"></video>
+
+            <div id="kp-placeholder-scene" class="kp-placeholder-content">
+                <video class="kp-battle-sprite-video" autoplay loop muted playsinline>
+                    <source src="assets/sprite-battle.mp4" type="video/mp4">
+                </video>
+
+                <div class="kp-placeholder-overlay">
+                    <div id="audio-cover-center" class="audio-info-container" style="display: none;">
+                        <img src="assets/box.png" id="kp-placeholder-image" alt="Insert Media Key">
+                        <div class="audio-text-metadata">
+                            <div id="track-title"></div>
+                            <div id="track-artist"></div>
+                        </div>
+                    </div>
+                    <div id="sora-welcome-bubble" class="sora-bubble-container">
+                        <div id="drop-text-hint"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="kp-controls">
+            <div class="kp-progress-wrapper">
+                <div class="kp-progress-bg"></div>
+                <div id="progress-fill" class="kp-progress-fill"></div>
+                <input type="range" id="seekSlider" class="kp-progress-slider" min="0" max="100" value="0">
+            </div>
+
+            <div class="kp-controls-row">
+                <div class="kp-left-group">
+                    <div class="kp-time-display">0:00 / 0:00</div>
+                    <div class="kp-speed-control">
+                        <span class="kp-speed-label" data-i18n="controls.speed">Vitesse</span>
+                        <div class="kp-speed-buttons">
+                            <button class="kp-btn-square kp-speed-btn" data-speed="0.5">0.5x</button>
+                            <button class="kp-btn-square kp-speed-btn kp-speed-active" data-speed="1">1x</button>
+                            <button class="kp-btn-square kp-speed-btn" data-speed="1.5">1.5x</button>
+                            <button class="kp-btn-square kp-speed-btn" data-speed="2">2x</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="kp-media-buttons">
+                    <button id="playBtn" class="kp-btn-square">▶</button>
+                    <button id="prevBtn" class="kp-btn-square">⏮</button>
+                    <button id="stopBtn" class="kp-btn-square">⏹</button>
+                    <button id="nextBtn" class="kp-btn-square">⏭</button>
+                    <button class="kp-btn-square kp-opacity" onclick="window.toggleFullscreen()">⛶</button>
+                    <button id="repeatBtn" class="kp-btn-square kp-opacity">↻</button>
+                    <button id="shuffleBtn" class="kp-btn-square kp-opacity">⇄</button>
+                    <button id="subtitleBtn" class="kp-btn-square kp-opacity">CC</button>
+                </div>
+                <div class="kp-volume-group">
+                    <button id="volumeBtn" class="kp-btn-square" style="border: none; background: transparent; cursor: pointer;">🔊</button>
+                    <input type="range" class="kp-volume-slider" min="0" max="100" value="90">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <input type="file" id="fileInput" style="display:none" accept="video/*,audio/*">
+    <input type="file" id="multiFileInput" style="display:none" accept="video/*,audio/*" multiple>
+    <input type="file" id="folderInput" style="display:none" webkitdirectory>
+    <input type="file" id="subtitleInput" style="display:none" accept=".srt,.vtt,.ass,.ssa">
+
+    <script src="renderer.js"></script>
+</body>
+</html>

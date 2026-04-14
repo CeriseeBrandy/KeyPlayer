@@ -9,8 +9,6 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 let mainWindow = null;
-
-// --- DISCORD RPC ---
 let rpc = null;
 let rpcReady = false;
 let pendingActivity = null;
@@ -24,11 +22,28 @@ const IDLE_ACTIVITY = {
   instance: false,
 };
 
+// --- FONCTION DE NETTOYAGE RPC ---
+// On crée une fonction dédiée pour être sûr de l'appeler n'importe quand
+async function destroyRPC() {
+  if (rpc) {
+    try {
+      await rpc.clearActivity(); // On efface le statut d'abord
+      await rpc.destroy();       // On détruit le client
+      rpc = null;
+      rpcReady = false;
+      console.log('Discord RPC déconnecté proprement.');
+    } catch (err) {
+      console.error('Erreur lors de la déconnexion RPC:', err);
+    }
+  }
+}
+
 function initDiscordRPC() {
   try {
     const DiscordRPC = require('discord-rpc');
     DiscordRPC.register(DISCORD_CLIENT_ID);
     rpc = new DiscordRPC.Client({ transport: 'ipc' });
+    
     rpc.on('ready', () => {
       rpcReady = true;
       if (pendingActivity) {
@@ -38,11 +53,15 @@ function initDiscordRPC() {
         rpc.setActivity(IDLE_ACTIVITY).catch(console.error);
       }
     });
-    rpc.login({ clientId: DISCORD_CLIENT_ID }).catch(() => {});
-  } catch (err) { console.warn('Discord RPC non dispo'); }
+
+    rpc.login({ clientId: DISCORD_CLIENT_ID }).catch(() => {
+      console.warn('Impossible de se connecter à Discord');
+    });
+  } catch (err) { 
+    console.warn('Discord RPC non dispo'); 
+  }
 }
 
-// --- APP LOCK & START ---
 const gotTheLock = app.requestSingleInstanceLock();
 
 if (!gotTheLock) {
@@ -86,9 +105,6 @@ function createWindow() {
   mainWindow.setMenu(null);
   mainWindow.loadFile('index.html');
 
-
-  
-
   mainWindow.webContents.on('did-finish-load', () => {
     const filePath = process.argv.find(arg => isMediaFile(arg));
     if (filePath) {
@@ -96,16 +112,7 @@ function createWindow() {
     }
   });
 
-  mainWindow.on('enter-full-screen', () => {
-    mainWindow.webContents.send('fullscreen-change', true);
-  });
-
-  mainWindow.on('leave-full-screen', () => {
-    mainWindow.webContents.send('fullscreen-change', false);
-  });
-
   mainWindow.on('closed', () => {
-    if (rpc) rpc.destroy().catch(() => {});
     mainWindow = null;
   });
 }
@@ -114,6 +121,20 @@ function isMediaFile(filePath) {
   if (!filePath) return false;
   return MEDIA_EXTS.some(ext => filePath.toLowerCase().endsWith(ext));
 }
+
+// --- GESTION DE LA FERMETURE (CRUCIAL) ---
+
+// S'exécute juste avant que l'app commence à se fermer
+app.on('before-quit', async (event) => {
+  // On détruit le RPC ici pour être sûr qu'il se coupe avant le processus
+  await destroyRPC();
+});
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
 
 // --- IPC COMMANDS ---
 ipcMain.on('discord-set-activity', (event, data) => {
@@ -135,12 +156,12 @@ ipcMain.on('discord-idle', () => {
     if (rpc && rpcReady) rpc.setActivity(IDLE_ACTIVITY);
 });
 
-ipcMain.on('close-app', () => { if(mainWindow) mainWindow.close(); });
+ipcMain.on('close-app', () => { 
+    // On appelle app.quit() directement pour déclencher 'before-quit'
+    app.quit(); 
+});
+
 ipcMain.on('minimize-app', () => { if(mainWindow) mainWindow.minimize(); });
 ipcMain.on('toggle-fullscreen', () => {
   if (mainWindow) mainWindow.setFullScreen(!mainWindow.isFullScreen());
-});
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
 });
